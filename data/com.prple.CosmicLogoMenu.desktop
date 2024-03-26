@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Cosmic Logo Menu
+Comment=Apple's macOS menu style for COSMIC desktop
+Type=Application
+Exec=cosmic-logomenu
+Terminal=false
+Categories=Cosmic;Iced;
+Keywords=Cosmic;Iced;
+# Translators: Do NOT translate or transliterate this text (this is an icon file name)!
+Icon=com.prple.CosmicLogoMenu
+StartupNotify=true
+NoDisplay=true
+X-CosmicApplet=true
