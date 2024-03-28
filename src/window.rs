@@ -1,5 +1,8 @@
+use std::process;
+
 use cosmic::app::Core;
 
+use cosmic::applet::menu_button;
 use cosmic::iced::wayland::popup::{destroy_popup, get_popup};
 use cosmic::iced::window::Id;
 use cosmic::iced::{Command, Limits};
@@ -15,6 +18,8 @@ use crate::config::{Config, CONFIG_VERSION};
 use cosmic::cosmic_config;
 
 pub const APP_ID: &str = "com.prple.CosmicLogoMenu";
+
+// TODO: Figure out how icons are handled and this probably needs its own function 
 const ICON: &str = "display-symbolic";
 
 pub struct Window {
@@ -29,6 +34,7 @@ pub enum Message {
     Config(Config),
     TogglePopup,
     PopupClosed(Id),
+    AboutMySystem,
 }
 
 #[derive(Clone, Debug)]
@@ -120,6 +126,11 @@ impl cosmic::Application for Window {
                     self.popup = None;
                 }
             }
+            Message::AboutMySystem => {
+                let _ = process::Command::new("cosmic-settings")
+                .arg("about")
+                .spawn();
+            }
         }
         Command::none()
     }
@@ -135,7 +146,8 @@ impl cosmic::Application for Window {
 
     // This is where the content goes when clicked
     fn view_window(&self, _id: Id) -> Element<Self::Message> {
-        let content = text("hello world!");
+        let content = menu_button(text("About my system").size(14))
+        .on_press(Message::AboutMySystem);
         
         self.core.applet.popup_container(content).into()
     }
