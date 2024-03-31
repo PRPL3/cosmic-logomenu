@@ -10,7 +10,7 @@ use cosmic::iced::{Command, Limits};
 use cosmic::iced_futures::Subscription;
 use cosmic::iced_runtime::core::window;
 use cosmic::iced_style::application;
-use cosmic::widget::{button, text};
+use cosmic::widget::{button, text, column, row};
 
 use cosmic::{Element, Theme};
 
@@ -20,8 +20,7 @@ use cosmic::cosmic_config;
 pub const APP_ID: &str = "com.prple.CosmicLogoMenu";
 
 // TODO: Figure out how icons are handled and this probably needs its own function 
-const ICON: &str = "display-symbolic";
-
+const ICON: &str = APP_ID;
 pub struct Window {
     core: Core,
     config: Config,
@@ -30,11 +29,19 @@ pub struct Window {
 }
 
 #[derive(Clone, Debug)]
+enum PowerAction {
+    Suspend,
+    Restart,
+    Shutdown,
+}
+
+#[derive(Clone, Debug)]
 pub enum Message {
     Config(Config),
     TogglePopup,
     PopupClosed(Id),
     AboutMySystem,
+    SoftwareCenter,
 }
 
 #[derive(Clone, Debug)]
@@ -114,10 +121,10 @@ impl cosmic::Application for Window {
                             .applet
                             .get_popup_settings(Id::MAIN, new_id, None, None, None);
                     popup_settings.positioner.size_limits = Limits::NONE
-                        .max_width(500.0)
-                        .min_width(300.0)
-                        .min_height(200.0)
-                        .max_height(1080.0);
+                        .min_width(100.0)
+                        .max_height(100.0)
+                        .min_height(400.0)
+                        .max_width(500.0);
                     get_popup(popup_settings)
                 }
             }
@@ -130,6 +137,9 @@ impl cosmic::Application for Window {
                 let _ = process::Command::new("cosmic-settings")
                 .arg("about")
                 .spawn();
+            }
+            Message::SoftwareCenter => {
+                let _ = process::Command::new("cosmic-store").spawn();
             }
         }
         Command::none()
@@ -148,7 +158,7 @@ impl cosmic::Application for Window {
     fn view_window(&self, _id: Id) -> Element<Self::Message> {
         let content = menu_button(text("About my system").size(14))
         .on_press(Message::AboutMySystem);
-        
+    
         self.core.applet.popup_container(content).into()
     }
     fn subscription(&self) -> Subscription<Self::Message> {
